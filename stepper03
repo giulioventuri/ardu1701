@@ -1,0 +1,73 @@
+int posMax=0;
+int luceMax=0;
+int misura = 1;
+
+int pinPasso=9;
+int pinDirezione=8;
+
+int n = 0;
+int d = 1;
+
+void setup() {
+  pinMode(A1,INPUT);
+  pinMode(pinPasso,OUTPUT);
+  pinMode(pinDirezione,OUTPUT);
+  Serial.begin(115200);
+}
+
+int massimo = 2000;
+
+void loop() {
+  int a;
+
+  a=analogRead(A1);
+  
+  delay(1);
+  n=n+d;
+  //Serial.print("Luce: ");
+  //Serial.print(a);
+  //Serial.print("pari (0) o dispari (1): ");
+  //Serial.print(n%2); //stampa il resto di n diviso 2
+  //Serial.print(" posizione:");
+  //Serial.println(n);
+
+  if( misura == 1 ) {
+    // siamo in fase di misurazione della luce
+    if( a > luceMax) {
+      // ho trovato un nuovo massimo
+          luceMax=a; //valore luce attuale
+          posMax=n;  //posizione motore attuale
+      }
+    }
+    
+  if( misura == 0 ) {
+    //non siamo in fase di misurazione
+    if( n == posMax ) {
+      delay(5000);
+      misura=1;
+      luceMax=0;
+      posMax=0;
+    }
+  }
+  
+  digitalWrite(pinPasso,n%2);
+  if( d > 0 )
+    digitalWrite(pinDirezione,HIGH);
+  else
+    digitalWrite(pinDirezione,LOW);
+    
+  //controllo raggiungimento massimo
+  if( d > 0 && n >= massimo ) {
+     if ( misura == 1 ) {
+        misura = 0;
+     }
+     d=-1;
+  }
+
+  //controllo raggiungimento minimo
+  if( d < 0 && n <= 0 ) {
+     d=1;
+  }
+  
+
+}
