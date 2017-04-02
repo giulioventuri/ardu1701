@@ -1,3 +1,9 @@
+/* MOTORE STEPPER MONTATO SU SCATOLETTA DI TONNO
+     il motore tipo NEMA-17 comandato con driver tipo 8825
+     fa girare una piccola cella fotovoltaica ed
+     ogni 5 secondi si ferma sulla posizione 
+     che riceve piu' luce.
+*/
 int posMax=0;
 int luceMax=0;
 int misura = 1;
