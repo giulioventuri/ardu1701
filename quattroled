@@ -1,0 +1,113 @@
+/* programma che accende e 
+ *  spegne 4 led con frequenze
+ *  diverse e con separate funzioni
+ *  di controllo
+ *  
+ *  i led sono collegati ai pin 8,9,10,11
+ */
+ 
+int stato[4]; // HIGH oppure LOW
+unsigned long scadenza[4]; //millisecondi
+int indice=0; //indica la prossima scadenza
+
+void setup() {
+  
+  for(int i=0;i<4;i++){ //per ognuno dei 4 led..
+    pinMode(8+i,OUTPUT); //mette la porta in OUTPUT
+    scadenza[i]=0;      // azzera la scadenza 
+    stato[i]=LOW;       // spegne il led
+  }
+  
+  Serial.begin(115200);  //comunicazione seriale solo per debug
+}
+
+void loop() { 
+  
+  /////////////////////////////////////////
+  // tempo (ms) del prossimo lavoro da fare:
+  // vado a cercare la scadenza di valore minimo
+  unsigned long prossimo = scadenza[0];
+  indice = 0; // *!* questa riga era stata cancellata erroneamente durante la prima stesura
+  for(int i=1;i<4;i++){
+     if( scadenza[i]<prossimo) {
+        prossimo=scadenza[i];
+        indice=i; 
+     }
+  }
+
+  // la funzione millis() legge l'orologio di sistema in millisecondi
+  if( prossimo > millis()+1 ) //se la prossima scadenza e' nel futuro (lontano piu' di 1 millisecondo)..
+    delay(prossimo-millis()); // ... attendi
+  
+  Serial.print(indice);
+  Serial.print(" ");
+  Serial.print(prossimo);
+  Serial.print(" ");
+  Serial.println(millis());
+
+  /*
+   * Con switch posso separare la gestione dei led.
+   * Aumenta così la ridondanza (le ripetizioni) ma offrendo
+   * possibilità di personalizzare in modo piu' libero i diversi controlli
+   */
+  switch( indice ) {
+    case 0:
+      gestisciscadenzazero();
+    break;
+    case 1:
+      gestisciscadenzauno();
+    break;
+    case 2:
+      gestisciscadenzadue();
+    break;
+      
+    case 3:
+      gestisciscadenzatre();
+  }
+}
+
+
+/* funzioni di controllo:
+ *  l'ide arduino consente di tralasciare l'inserimento della firma
+ *  ad inizio file (puo' essere una cattiva abitudine per chi programma sul serio)
+*/
+
+
+void gestisciscadenzazero(){
+   if( stato[0]==LOW )
+       stato[0]=HIGH;    
+   
+   else
+       stato[0]=LOW;
+   digitalWrite(8,stato[0]);
+   scadenza[0]=scadenza[0]+2001L;
+}
+
+void gestisciscadenzauno(){
+   if( stato[1]==LOW )
+       stato[1]=HIGH;
+   else
+       stato[1]=LOW;
+   digitalWrite(9,stato[1]);
+   scadenza[1]=scadenza[1]+3000L;
+}
+
+void gestisciscadenzadue(){
+   if( stato[2]==LOW )
+       stato[2]=HIGH;
+   else
+       stato[2]=LOW;
+   digitalWrite(10,stato[2]);
+   scadenza[2]=scadenza[2]+2500L;
+}
+
+void gestisciscadenzatre(){
+   if( stato[3]==LOW )
+       stato[3]=HIGH;
+   else
+       stato[3]=LOW;
+   digitalWrite(11,stato[3]);
+   //Serial.print("aumento ");
+   scadenza[3]=scadenza[3]+5700L;
+   //Serial.println(scadenza[3]);
+}
